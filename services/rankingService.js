@@ -87,88 +87,12 @@ async function getPlayerRanks(epicUserId) {
     }
 
     console.error(`[Ranking Service] Failed to render tracker page: ${error.message}`);
-    return createDemoPlayerData(epicUserId);
+    throw new Error("API_UNAVAILABLE");
   } finally {
     if (browser) {
       await browser.close().catch(() => {});
     }
   }
-}
-
-function createDemoPlayerData(epicUserId) {
-  // Deterministic fallback so the same player gets stable demo values.
-  const seed = Math.abs(
-    Array.from(epicUserId).reduce((acc, char) => acc + char.charCodeAt(0), 0)
-  );
-
-  const makeRank = (name, baseMmr, offset) => {
-    const mmr = baseMmr + ((seed + offset) % 120);
-    return {
-      name,
-      mmr,
-      division: ["I", "II", "III", "IV"][(seed + offset) % 4],
-      rank: mmrToRankName(mmr)
-    };
-  };
-
-  return {
-    epicUserId,
-    displayName: epicUserId,
-    platform: "Epic Games",
-    lastUpdated: new Date(),
-    isDemo: true,
-    ranks: {
-      casual: {
-        name: "Casual",
-        mmr: 900 + (seed % 200),
-        division: "—",
-        rank: "N/A"
-      },
-      duel: makeRank("Ranked Duel (1v1)", 800, 11),
-      doubles: makeRank("Ranked Doubles (2v2)", 1000, 29),
-      standard: makeRank("Ranked Standard (3v3)", 950, 47),
-      tournament: makeRank("Tournament Rank", 900, 73)
-    }
-  };
-}
-
-function mmrToRankName(mmr) {
-  if (!Number.isFinite(mmr)) {
-    return "Unranked";
-  }
-
-  const thresholds = [
-    { min: 1540, rank: "Supersonic Legend" },
-    { min: 1435, rank: "Grand Champion III" },
-    { min: 1335, rank: "Grand Champion II" },
-    { min: 1235, rank: "Grand Champion I" },
-    { min: 1180, rank: "Champion III" },
-    { min: 1130, rank: "Champion II" },
-    { min: 1075, rank: "Champion I" },
-    { min: 1015, rank: "Diamond III" },
-    { min: 955, rank: "Diamond II" },
-    { min: 895, rank: "Diamond I" },
-    { min: 835, rank: "Platinum III" },
-    { min: 775, rank: "Platinum II" },
-    { min: 715, rank: "Platinum I" },
-    { min: 655, rank: "Gold III" },
-    { min: 595, rank: "Gold II" },
-    { min: 535, rank: "Gold I" },
-    { min: 475, rank: "Silver III" },
-    { min: 415, rank: "Silver II" },
-    { min: 355, rank: "Silver I" },
-    { min: 295, rank: "Bronze III" },
-    { min: 235, rank: "Bronze II" },
-    { min: 175, rank: "Bronze I" }
-  ];
-
-  for (const entry of thresholds) {
-    if (mmr >= entry.min) {
-      return entry.rank;
-    }
-  }
-
-  return "Unranked";
 }
 
 function extractProfileName(rows, fallbackName) {
