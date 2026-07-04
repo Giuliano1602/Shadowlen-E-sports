@@ -63,6 +63,10 @@ Hinweise:
 - Der Service ist als Worker konfiguriert (kein Web-Port notwendig).
 - `/tracking` nutzt Playwright im Headless-Modus (cloud-friendly).
 
+## Railway Hinweis
+
+Wenn Railway einen alten Commit mit falschem Build-Stand nimmt, immer einen neuen Deploy vom neuesten main Commit starten und vorher den Build-Cache leeren.
+
 ## Health Monitor Alerts
 
 Der Bot sendet jetzt automatisch Health-Alerts in einen Discord-Kanal.
