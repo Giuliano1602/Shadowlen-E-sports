@@ -125,8 +125,13 @@ async function scrapeAttempt(profileUrl, epicUserId, attempt) {
 
     await page.waitForTimeout(TRACKING_POST_LOAD_WAIT_MS);
 
+    const pageTitle = await page.title().catch(() => "");
     const bodyText = await page.locator("body").innerText().catch(() => "");
     if (isPlayerNotFoundText(bodyText)) {
+      throw new Error("PLAYER_NOT_FOUND");
+    }
+
+    if (isPlayerNotFoundText(pageTitle)) {
       throw new Error("PLAYER_NOT_FOUND");
     }
 
@@ -149,6 +154,10 @@ async function scrapeAttempt(profileUrl, epicUserId, attempt) {
           lastUpdated: new Date(),
           ranks
         };
+      }
+
+      if (isLikelyProfileWithoutStats(bodyText, rows)) {
+        throw new Error("PLAYER_NOT_FOUND");
       }
     }
 
@@ -595,8 +604,26 @@ function isPlayerNotFoundText(text) {
     lowered.includes("player not found") ||
     lowered.includes("no results found") ||
     lowered.includes("we could not find") ||
-    lowered.includes("profile does not exist")
+    lowered.includes("profile does not exist") ||
+    lowered.includes("no stats found") ||
+    lowered.includes("no stats available") ||
+    lowered.includes("no tracked matches")
   );
+}
+
+function isLikelyProfileWithoutStats(bodyText, rows) {
+  const rowCount = Array.isArray(rows) ? rows.length : 0;
+  if (rowCount > 0 && rowCount <= 3) {
+    const lowered = String(bodyText || "").toLowerCase();
+    return (
+      lowered.includes("no stats") ||
+      lowered.includes("no data") ||
+      lowered.includes("not enough matches") ||
+      lowered.includes("could not find")
+    );
+  }
+
+  return false;
 }
 
 function isRetryableTrackingError(code) {
