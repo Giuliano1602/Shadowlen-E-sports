@@ -1,0 +1,21 @@
+services:
+  - type: worker
+    name: rocketleague-shop-bot
+    env: docker
+    plan: starter
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: CLIENT_ID
+        sync: false
+      - key: GUILD_ID
+        sync: false
+      - key: SHOP_CRON
+        value: 0 21 * * *
+      - key: HEALTH_NOTIFY_STARTUP
+        value: true
+      - key: HEALTH_HEARTBEAT_MINUTES
+        value: 60
