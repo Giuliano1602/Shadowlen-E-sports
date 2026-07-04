@@ -64,6 +64,10 @@ async function getPlayerRanks(epicUserId) {
     throw new Error("TRACKER_UNAVAILABLE");
   }
 
+  if (String(lastError.message).includes("LAYOUT_CHANGED_OR_BLOCKED")) {
+    throw new Error("TRACKER_LAYOUT_CHANGED");
+  }
+
   throw new Error("API_UNAVAILABLE");
 }
 

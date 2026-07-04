@@ -45,26 +45,32 @@ module.exports = {
       try {
         playerData = await getPlayerRanks(epicId);
       } catch (apiError) {
-        console.error("API Error:", apiError.message);
+        const reason = String(apiError?.message || "API_UNAVAILABLE");
+        console.error("API Error:", reason);
 
-        if (apiError.message.includes("not found") || apiError.message.includes("404")) {
+        if (reason.includes("not found") || reason.includes("404")) {
           await interaction.editReply({
             content: `❌ Kein Spieler mit der Epic Games ID \`${epicId}\` gefunden.`,
             flags: 64
           });
-        } else if (apiError.message.includes("TRACKER_BLOCKED")) {
+        } else if (reason.includes("TRACKER_BLOCKED")) {
           await interaction.editReply({
             content: "❌ Der Tracker-Anbieter blockiert aktuell Server-Anfragen (Cloudflare/Anti-Bot). Bitte spaeter erneut versuchen.",
             flags: 64
           });
-        } else if (apiError.message.includes("TRACKER_UNAVAILABLE")) {
+        } else if (reason.includes("TRACKER_UNAVAILABLE")) {
           await interaction.editReply({
             content: "❌ Der Tracker-Anbieter ist momentan nicht erreichbar. Bitte spaeter erneut versuchen.",
             flags: 64
           });
+        } else if (reason.includes("TRACKER_LAYOUT_CHANGED")) {
+          await interaction.editReply({
+            content: "❌ Der Tracker hat sein Seitenlayout geaendert oder liefert keine verwertbaren Daten. Bitte spaeter erneut versuchen.",
+            flags: 64
+          });
         } else {
           await interaction.editReply({
-            content: "❌ Die Rocket League API ist momentan nicht erreichbar. Bitte später erneut versuchen.",
+            content: `❌ Die Rocket League API ist momentan nicht erreichbar (Code: ${reason}). Bitte spaeter erneut versuchen.`,
             flags: 64
           });
         }
