@@ -55,6 +55,15 @@ async function getPlayerRanks(epicUserId) {
   }
 
   console.error(`[Ranking Service] Failed to render tracker page: ${lastError.message}`);
+
+  if (String(lastError.message).includes("ANTI_BOT_BLOCKED")) {
+    throw new Error("TRACKER_BLOCKED");
+  }
+
+  if (String(lastError.message).includes("UPSTREAM_5XX")) {
+    throw new Error("TRACKER_UNAVAILABLE");
+  }
+
   throw new Error("API_UNAVAILABLE");
 }
 
@@ -117,6 +126,10 @@ async function scrapeAttempt(profileUrl, epicUserId, attempt) {
 
     if (status === 404) {
       throw new Error("PLAYER_NOT_FOUND");
+    }
+
+    if (status === 403) {
+      throw new Error("ANTI_BOT_BLOCKED");
     }
 
     if (status >= 500) {

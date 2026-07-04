@@ -52,6 +52,16 @@ module.exports = {
             content: `❌ Kein Spieler mit der Epic Games ID \`${epicId}\` gefunden.`,
             flags: 64
           });
+        } else if (apiError.message.includes("TRACKER_BLOCKED")) {
+          await interaction.editReply({
+            content: "❌ Der Tracker-Anbieter blockiert aktuell Server-Anfragen (Cloudflare/Anti-Bot). Bitte spaeter erneut versuchen.",
+            flags: 64
+          });
+        } else if (apiError.message.includes("TRACKER_UNAVAILABLE")) {
+          await interaction.editReply({
+            content: "❌ Der Tracker-Anbieter ist momentan nicht erreichbar. Bitte spaeter erneut versuchen.",
+            flags: 64
+          });
         } else {
           await interaction.editReply({
             content: "❌ Die Rocket League API ist momentan nicht erreichbar. Bitte später erneut versuchen.",
