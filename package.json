@@ -18,7 +18,7 @@
     "dotenv": "^16.4.5",
     "node-cron": "^3.0.3",
     "playwright": "^1.61.1",
-    "pm2": "^7.0.3",
-    "pm2-windows-startup": "^1.0.3"
+    "pm2": "^7.0.3"
   }
+
 }
